@@ -11,6 +11,7 @@ from sklearn.metrics import mean_squared_error
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
+from datetime import datetime
 
 # convert series to supervised learning
 def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
@@ -66,9 +67,9 @@ print(reframed.head())
 
 # split into train and test sets
 values = reframed.values
-n_train_days = 365
-test = values[:n_train_days, :]
-train = values[n_train_days:, :]
+n_train_days = 2300
+train = values[:n_train_days, :]
+test = values[n_train_days:, :]
 
 # split into inputs and outputs
 train_X, train_y = train[:, :-1], train[:, -1]
@@ -108,7 +109,7 @@ inv_yhat = scaler.inverse_transform(inv_yhat)
 inv_yhat = inv_yhat[:,0]
 
 # invert scaling for actual
-test_y = test_y.reshape((len(test_y), 1)) # varför 730 här? 365+365?
+test_y = test_y.reshape((len(test_y), 1)) 
 inv_y = concatenate((test_y, test_X[:, 1:]), axis=1)
 inv_y = scaler.inverse_transform(inv_y)
 inv_y = inv_y[:,0]
@@ -116,5 +117,10 @@ inv_y = inv_y[:,0]
 # calculate RMSE
 rmse = sqrt(mean_squared_error(inv_y, inv_yhat))
 print('Test RMSE: %.3f' % rmse)
+
+
+pyplot.plot(inv_y)
+pyplot.plot(inv_yhat)
+pyplot.show()
 
 
