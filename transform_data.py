@@ -41,7 +41,8 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     return agg
 
 # load dataset
-dataset = read_csv('past_returns.csv', header=0, index_col=0)
+# dataset = read_csv('past_returns.csv', header=0, index_col=0, usecols=[0,1,3])
+dataset = read_csv('DATASET.csv', header=0, index_col=0, usecols=[0,1,2])
 values = dataset.values
 
 # integer encode direction
@@ -59,7 +60,7 @@ scaled = scaler.fit_transform(values)
 reframed = series_to_supervised(scaled, 1, 1)
 
 # drop columns we don't want to predict
-reframed.drop(reframed.columns[[2]], axis=1, inplace=True)
+reframed.drop(reframed.columns[[3]], axis=1, inplace=True)
 print(reframed.head())
 
 # -- MODEL STUFF --
@@ -89,7 +90,7 @@ model.add(Dense(1))
 model.compile(loss='mae', optimizer='adam')
 
 # fit network
-history = model.fit(train_X, train_y, epochs=50, batch_size=72, validation_data=(test_X, test_y), verbose=2, shuffle=False)
+history = model.fit(train_X, train_y, epochs=50, batch_size=32, validation_data=(test_X, test_y), verbose=2, shuffle=False)
 
 # plot history
 pyplot.plot(history.history['loss'], label='train')
@@ -120,6 +121,7 @@ print('Test RMSE: %.3f' % rmse)
 
 
 pyplot.plot(inv_y)
+
 pyplot.plot(inv_yhat)
 pyplot.show()
 
